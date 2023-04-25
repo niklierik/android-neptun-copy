@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "261308946328",
+    "firebase_url": "https://neptun-copy-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "neptun-copy",
+    "storage_bucket": "neptun-copy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:261308946328:android:65ac771eb8e44e5fc7fded",
+        "android_client_info": {
+          "package_name": "me.eriknikli.neptuncopy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "261308946328-i9u6d8fi1kt1t1ipebf27jg36b32hu0l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpamFL-Lgpq_9aWukQPKxgVOgwTdSLkqk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "261308946328-i7j0ef11t0vc2gce5vcvj3qv9tbr6cq4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
