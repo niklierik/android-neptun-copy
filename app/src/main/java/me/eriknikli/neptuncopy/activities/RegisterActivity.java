@@ -37,7 +37,8 @@ public class RegisterActivity extends AppCompatActivity {
     TextView errorText;
 
     private void moveToMain() {
-        // TODO
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
     }
 
     private void moveToLogin() {

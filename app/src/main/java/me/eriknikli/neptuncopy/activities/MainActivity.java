@@ -23,7 +23,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     private void moveToMain() {
-        // TODO
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
     }
 
     @Override
