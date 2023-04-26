@@ -26,9 +26,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        if (mAuth.getCurrentUser() != null) {
-            moveToMain();
-        }
+        mAuth.addAuthStateListener(l -> {
+            if (l.getCurrentUser() != null) {
+                moveToMain();
+            }
+        });
     }
 
     private void setBtnsEnabled(boolean value) {
@@ -61,17 +63,18 @@ public class MainActivity extends AppCompatActivity {
                 errorText.setText("Nincs megadva e-mail cím vagy jelszó.");
                 return;
             }
+            setBtnsEnabled(false);
             mAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener((authResult) -> {
-                moveToMain();
                 setBtnsEnabled(true);
+                moveToMain();
             }).addOnFailureListener((e) -> {
+                setBtnsEnabled(true);
                 String msg = e.getMessage();
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
                     FirebaseAuthInvalidCredentialsException fe = (FirebaseAuthInvalidCredentialsException) e;
                     msg = ErrorHandling.getErrorMessage(fe);
                 }
                 errorText.setText(msg);
-                setBtnsEnabled(true);
             });
         });
     }
