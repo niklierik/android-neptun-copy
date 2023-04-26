@@ -1,4 +1,4 @@
-package me.eriknikli.neptuncopy;
+package me.eriknikli.neptuncopy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+
+import me.eriknikli.neptuncopy.R;
+import me.eriknikli.neptuncopy.utils.ErrorHandling;
 
 public class MainActivity extends AppCompatActivity {
 

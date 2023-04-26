@@ -1,4 +1,4 @@
-package me.eriknikli.neptuncopy;
+package me.eriknikli.neptuncopy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +19,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import me.eriknikli.neptuncopy.R;
+import me.eriknikli.neptuncopy.activities.MainActivity;
+import me.eriknikli.neptuncopy.models.User;
+import me.eriknikli.neptuncopy.utils.DateHandler;
+import me.eriknikli.neptuncopy.utils.ErrorHandling;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -115,14 +121,8 @@ public class RegisterActivity extends AppCompatActivity {
             Date date = DateHandler.getDateFromString(formatedDate);
             buttonsEnabled(false);
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(authResult -> {
-                Map<String, Object> map = new HashMap<>();
-                map.put("email", email);
-                map.put("familyname", familyname);
-                map.put("forename", forename);
-                map.put("address", address);
-                map.put("isTeacher", isTeacher.isChecked());
-                map.put("birthdate", date);
-                db.collection("users").add(map).addOnCompleteListener(task -> {
+                User user = new User(familyname, forename, date, address, email, isTeacher.isChecked());
+                db.collection("users").add(user).addOnCompleteListener(task -> {
                     moveToMain();
                 }).addOnFailureListener(e -> {
                     buttonsEnabled(true);
