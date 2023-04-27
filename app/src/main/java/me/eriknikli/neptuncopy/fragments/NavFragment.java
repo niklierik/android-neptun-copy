@@ -1,14 +1,23 @@
 package me.eriknikli.neptuncopy.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import me.eriknikli.neptuncopy.R;
+import me.eriknikli.neptuncopy.activities.HomeActivity;
+import me.eriknikli.neptuncopy.activities.MainActivity;
+import me.eriknikli.neptuncopy.activities.MarksActivity;
+import me.eriknikli.neptuncopy.models.User;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,6 +57,33 @@ public class NavFragment extends Fragment {
         return fragment;
     }
 
+    public static void init(AppCompatActivity container, FirebaseAuth auth, FirebaseFirestore db) {
+        Button showMarksBtn = container.findViewById(R.id.nav_showMarksBtn);
+        Button writeMarksBtn = container.findViewById(R.id.nav_writeMarksBtn);
+        Button logoutBtn = container.findViewById(R.id.nav_logoutBtn);
+        Button homeBtn = container.findViewById(R.id.nav_showCourseBtn);
+        homeBtn.setOnClickListener(l -> {
+            container.startActivity(new Intent(container, HomeActivity.class));
+        });
+        showMarksBtn.setOnClickListener(l -> {
+            container.startActivity(new Intent(container, MarksActivity.class));
+        });
+        writeMarksBtn.setOnClickListener(l -> {
+            container.startActivity(new Intent(container, MarksActivity.class));
+        });
+        writeMarksBtn.setVisibility(View.GONE);
+        showMarksBtn.setVisibility(View.GONE);
+        User.getLatest(auth, db, u -> {
+            writeMarksBtn.setVisibility(u.getIsTeacher() ? View.VISIBLE : View.GONE);
+            showMarksBtn.setVisibility(u.getIsTeacher() ? View.GONE : View.VISIBLE);
+        });
+        logoutBtn.setOnClickListener(l -> {
+            auth.signOut();
+            User.clearLatest();
+            container.startActivity(new Intent(container, MainActivity.class));
+        });
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +97,8 @@ public class NavFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+
         return inflater.inflate(R.layout.fragment_nav, container, false);
     }
 }
