@@ -1,4 +1,4 @@
-package me.eriknikli.neptuncopy;
+package me.eriknikli.neptuncopy.utils;
 
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 

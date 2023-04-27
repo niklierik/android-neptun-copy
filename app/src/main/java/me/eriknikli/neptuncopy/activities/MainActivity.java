@@ -1,6 +1,4 @@
-package me.eriknikli.neptuncopy;
-
-import androidx.appcompat.app.AppCompatActivity;
+package me.eriknikli.neptuncopy.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,8 +6,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import me.eriknikli.neptuncopy.R;
+import me.eriknikli.neptuncopy.models.User;
+import me.eriknikli.neptuncopy.utils.ErrorHandling;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,9 +23,13 @@ public class MainActivity extends AppCompatActivity {
     TextView errorText;
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore mStore;
+
+    private boolean loading;
 
     private void moveToMain() {
-        // TODO
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -28,9 +37,22 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         mAuth.addAuthStateListener(l -> {
             if (l.getCurrentUser() != null) {
-                moveToMain();
+                User.getLatest(mAuth, mStore, u -> {
+                    if (u != null) {
+                        moveToMain();
+                    }
+                    setLoading(false);
+                });
+                return;
             }
+            setLoading(false);
         });
+    }
+
+    private void setLoading(boolean value) {
+        setBtnsEnabled(!value);
+        email.setEnabled(!value);
+        password.setEnabled(!value);
     }
 
     private void setBtnsEnabled(boolean value) {
@@ -42,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
+        mStore = FirebaseFirestore.getInstance();
+
         setContentView(R.layout.activity_main);
 
         btnToRegister = findViewById(R.id.login_btnToRegister);
@@ -65,8 +89,13 @@ public class MainActivity extends AppCompatActivity {
             }
             setBtnsEnabled(false);
             mAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener((authResult) -> {
-                setBtnsEnabled(true);
-                moveToMain();
+                mStore.collection("users").document(authResult.getUser().getUid()).get().addOnSuccessListener(l -> {
+                    User.getLatest(mAuth, mStore, u -> {
+                        moveToMain();
+                    });
+                }).addOnFailureListener(e -> {
+                    setBtnsEnabled(true);
+                });
             }).addOnFailureListener((e) -> {
                 setBtnsEnabled(true);
                 String msg = e.getMessage();
@@ -77,5 +106,6 @@ public class MainActivity extends AppCompatActivity {
                 errorText.setText(msg);
             });
         });
+        setLoading(true);
     }
 }

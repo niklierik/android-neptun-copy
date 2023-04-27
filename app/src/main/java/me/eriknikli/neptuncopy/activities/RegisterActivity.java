@@ -1,6 +1,4 @@
-package me.eriknikli.neptuncopy;
-
-import androidx.appcompat.app.AppCompatActivity;
+package me.eriknikli.neptuncopy.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +8,8 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -17,8 +17,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+
+import me.eriknikli.neptuncopy.R;
+import me.eriknikli.neptuncopy.models.User;
+import me.eriknikli.neptuncopy.utils.DateHandler;
+import me.eriknikli.neptuncopy.utils.ErrorHandling;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -31,7 +34,8 @@ public class RegisterActivity extends AppCompatActivity {
     TextView errorText;
 
     private void moveToMain() {
-        // TODO
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
     }
 
     private void moveToLogin() {
@@ -49,7 +53,11 @@ public class RegisterActivity extends AppCompatActivity {
         super.onStart();
         mAuth.addAuthStateListener(l -> {
             if (l.getCurrentUser() != null) {
-                moveToMain();
+                User.getLatest(mAuth, db, u -> {
+                    if (u != null) {
+                        moveToMain();
+                    }
+                });
             }
         });
     }
@@ -115,18 +123,10 @@ public class RegisterActivity extends AppCompatActivity {
             Date date = DateHandler.getDateFromString(formatedDate);
             buttonsEnabled(false);
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(authResult -> {
-                Map<String, Object> map = new HashMap<>();
-                map.put("email", email);
-                map.put("familyname", familyname);
-                map.put("forename", forename);
-                map.put("address", address);
-                map.put("isTeacher", isTeacher.isChecked());
-                map.put("birthdate", date);
-                db.collection("users").add(map).addOnCompleteListener(task -> {
-                    moveToMain();
-                }).addOnFailureListener(e -> {
-                    buttonsEnabled(true);
-                    errorText.setText(e.getMessage());
+                User.getLatest(mAuth, db, u -> {
+                    if (u != null) {
+                        moveToMain();
+                    }
                 });
             }).addOnFailureListener(e -> {
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
